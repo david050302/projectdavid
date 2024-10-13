@@ -1,33 +1,35 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const Connection = require("tedious").Connection;
-const Request = require("tedious").Request;
-const TYPES = require("tedious").TYPES;
+const mysql = require("mysql2");
 const path = require("path");
-
 const app = express();
 const port = 5501;
 
 app.use(cors());
 app.use(bodyParser.json());
-const config = {
-  server: "BEARERLB",
-  authentication: {
-    type: "default",
-    options: {
-      userName: "luisconexion",
-      password: "administrador",
-    },
-  },
-  options: {
-    port: 1433,
-    database: "project",
-    trustServerCertificate: true,
-  },
-};
-
 app.use(express.static(path.join(__dirname, "public")));
+
+const connection = mysql.createConnection({
+  host: "autorack.proxy.rlwy.net", // Host
+  port: 10021, // Puerto
+  user: "root", // Usuario
+  password: "fBYJeGsLeMJHHtENZKkJJqtWTnHVLAhj", // Contraseña
+  database: "railway", // Base de datos
+  // Opciones adicionales
+  ssl: {
+    rejectUnauthorized: false, // Asegúrate de esto dependiendo de tu entorno
+  },
+});
+
+// Conectar a la base de datos
+connection.connect((err) => {
+  if (err) {
+    console.error("Error al conectarse a la base de datos: ", err);
+    return;
+  }
+  console.log("Conexión a la base de datos MySQL establecida.");
+});
 
 app.get("/t", (req, res) => {
   return res.send("testing");
@@ -40,34 +42,20 @@ app.get("/", function (req, res) {
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
 
-  const connection = new Connection(config);
-  connection.connect((err) => {
+  // Consulta para verificar credenciales
+  const query = `SELECT * FROM usuarios WHERE email = ? AND password = ?`;
+
+  connection.execute(query, [email, password], (err, results) => {
     if (err) {
-      return res
-        .status(500)
-        .json({ message: "Error al conectarse a la base de datos." });
+      console.error("Error en la consulta: ", err);
+      return res.status(500).json({ message: "Error en la consulta." });
     }
 
-    const request = new Request(
-      `SELECT * FROM usuarios WHERE email = @Email AND password = @Password`,
-      (err, rowCount) => {
-        connection.close();
-        if (err) {
-          console.log(err);
-          return res.status(500).json({ message: "Error en la consulta." });
-        }
-        if (rowCount === 0) {
-          return res.status(401).json({ message: "Credenciales inválidas." });
-        }
+    if (results.length === 0) {
+      return res.status(401).json({ message: "Credenciales inválidas." });
+    }
 
-        return res.json({ message: "Inicio de sesión exitoso.", email });
-      }
-    );
-
-    request.addParameter("Email", TYPES.VarChar, email);
-    request.addParameter("Password", TYPES.VarChar, password);
-
-    connection.execSql(request);
+    return res.json({ message: "Inicio de sesión exitoso.", email });
   });
 });
 
