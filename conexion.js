@@ -4,6 +4,7 @@ const cors = require("cors");
 const Connection = require("tedious").Connection;
 const Request = require("tedious").Request;
 const TYPES = require("tedious").TYPES;
+const path = require("path");
 
 const app = express();
 const port = 5501;
@@ -26,8 +27,14 @@ const config = {
   },
 };
 
+app.use(express.static(path.join(__dirname, "public")));
+
 app.get("/t", (req, res) => {
   return res.send("testing");
+});
+
+app.get("/", function (req, res) {
+  res.sendFile(path.join(__dirname, "/index.html"));
 });
 
 app.post("/login", (req, res) => {
