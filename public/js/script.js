@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
       .then((response) => {
         if (response.ok) {
-          return response.json(); 
+          return response.json();
         } else {
           return response.json().then((err) => {
             throw new Error(err.message);
@@ -68,11 +68,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       })
       .then((data) => {
-        authModal.style.display = "none"; 
-        openAuthModalButton.textContent = data.email; 
-        userInfoContainer.style.display = "block"; 
-        userNameSpan.textContent = data.email; 
-        isLoggedIn = true; 
+        authModal.style.display = "none";
+        openAuthModalButton.textContent = data.email;
+        userInfoContainer.style.display = "block";
+        userNameSpan.textContent = data.email;
+        isLoggedIn = true;
       })
       .catch((error) => alert(error.message));
   });
@@ -133,8 +133,8 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .then((message) => {
           userInfoContainer.style.display = "none";
-          openAuthModalButton.textContent = "👤"; 
-          isLoggedIn = false; 
+          openAuthModalButton.textContent = "👤";
+          isLoggedIn = false;
         })
         .catch((error) => {
           console.error("Error al cerrar sesión:", error);
@@ -157,9 +157,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function loadContent(bookId) {
+  window.loadContent = function (bookId) {
     if (bookId) {
-      fetch("http://127.0.0.1:5501/pages/" + bookId + ".html")
+      fetch("/pages/" + bookId + ".html")
         .then((response) => {
           if (!response.ok) {
             throw new Error("No se pudo cargar el contenido.");
@@ -175,8 +175,8 @@ document.addEventListener("DOMContentLoaded", () => {
           alert("No se pudo cargar el contenido del libro.");
         });
     }
-  }
-  
+  };
+
   const searchButton = document.getElementById("search-button");
   if (searchButton) {
     searchButton.addEventListener("click", searchBooks);
