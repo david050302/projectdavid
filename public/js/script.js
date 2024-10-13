@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = document.getElementById("login-email").value;
     const password = document.getElementById("login-password").value;
 
-    fetch("http://localhost:5501/login", {
+    fetch("/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
