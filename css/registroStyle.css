@@ -1,0 +1,130 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    background: #1f2937; /* Fondo oscuro */
+    height: 100vh;
+}
+
+/* Estilo del contenedor del formulario */
+.formulario {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background: #2d3748; /* Fondo oscuro del formulario */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+}
+
+/* Estilo del título del formulario */
+.formulario h1 {
+    text-align: center;
+    padding: 0 0 20px 0;
+    border-bottom: 1px solid #fcd34d; /* Línea de separación en amarillo */
+    color: #fcd34d; /* Color del título en amarillo */
+}
+
+/* Estilo del formulario */
+.formulario form {
+    padding: 0 40px;
+    box-sizing: border-box;
+}
+
+/* Estilo del campo de usuario */
+form .username {
+    position: relative;
+    border-bottom: 2px solid #fcd34d; /* Línea en amarillo */
+    margin: 30px 0;
+}
+
+.username input {
+    width: 100%;
+    padding: 0 5px;
+    height: 40px;
+    font-size: 16px;
+    border: none;
+    background: none;
+    outline: none;
+    color: white; /* Color del texto */
+}
+
+.username label {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    color: #adadad; /* Color del texto del label */
+    transform: translateY(-50%);
+    font-size: 16px;
+    pointer-events: none;
+    transition: .5s;
+}
+
+.username span::before {
+    content: '';
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #fcd34d; /* Línea en amarillo */
+    transition: .5s;
+}
+
+.username input:focus ~ label {
+    top: -5px;
+    color: #fcd34d; /* Color del label al enfocar en amarillo */
+}
+
+.username input:focus ~ span::before {
+    width: 100%;
+}
+
+/* Estilo del checkbox recordar */
+.recordar {
+    margin: -5px 0 20px 5px;
+    color: #fcd34d; /* Color en amarillo */
+    cursor: pointer;
+}
+
+.recordar:hover {
+    text-decoration: underline;
+}
+
+/* Estilo del botón de enviar */
+input[type="submit"] {
+    width: 100%;
+    height: 50px;
+    border: 1px solid #fcd34d; /* Borde en amarillo */
+    background: #6C3483; /* Fondo oscuro */
+    border-radius: 25px;
+    font-size: 18px;
+    color: white; /* Color del texto */
+    cursor: pointer;
+    outline: none;
+}
+
+input[type="submit"]:hover {
+    border-color: #eab308; /* Color del borde al pasar el cursor */
+    background: #2d3748; /* Fondo oscuro al pasar el cursor */
+    transition: .5s;
+}
+
+/* Estilo del enlace registrarse */
+.registrarse {
+    margin: 30px 0;
+    text-align: center;
+    font-size: 16px;
+    color: #fcd34d; /* Color en amarillo */
+}
+
+.registrarse a {
+    color: #fcd34d; /* Color del enlace en amarillo */
+    text-decoration: none;
+}
+
+.registrarse a:hover {
+    text-decoration: underline;
+}

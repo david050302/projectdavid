@@ -1,0 +1,94 @@
+/* Estilos específicos para moby_dick.html */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #111827;
+    color: white;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #1f2937;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 4px solid #fcd34d;
+    position: relative; /* Para controlar el posicionamiento del header */
+}
+
+/* Contenedor del contenido del header */
+.header-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* Estilo del icono de inicio */
+.home-icon {
+    margin-right: 10px; /* Espacio entre el icono de inicio y el título */
+    display: inline-block; /* Asegura que el contenedor se ajuste al tamaño de la imagen */
+    border-radius: 50%; /* Hace que el contenedor sea circular */
+    overflow: hidden; /* Asegura que la imagen se ajuste dentro del contenedor circular */
+}
+
+.home-icon img {
+    height: 100px; /* Ajusta el tamaño del icono según sea necesario */
+    width: auto; /* Mantiene la relación de aspecto de la imagen */
+    border-radius: 50%; /* Asegura que la imagen dentro del contenedor también sea circular */
+}
+
+/* Estilo del título */
+header h1 {
+    color: #fcd34d;
+    margin: 0;
+    margin-left: 10px; /* Espacio entre el título y el icono de inicio */
+    flex-shrink: 0; /* Evita que el título se reduzca en tamaño */
+}
+
+/* Contenedor del resumen y texto */
+.moby-dick-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+/* Título del resumen */
+.moby-dick-container h1 {
+    color: #fcd34d;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+/* Estilo del resumen y texto */
+.moby-dick-text {
+    background-color: #1f2937;
+    color: #fcd34d;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: justify;
+    line-height: 1.6;
+    max-height: 500px; /* Limita la altura del contenedor del texto */
+    overflow-y: auto; /* Añade barra de desplazamiento si es necesario */
+    margin: 0 auto; /* Centra el contenedor del texto horizontalmente */
+}
+
+/* Estilo del resumen */
+.summary-section {
+    background-color: #fcd34d; /* Color de fondo amarillo */
+    color: black; /* Color del texto */
+    padding: 2rem;
+    margin: 2rem auto; /* Centra la sección en la página */
+    border-radius: 10px;
+    text-align: center;
+    max-width: 800px; /* Ajusta el ancho máximo */
+}
+
+/* Estilos del resumen del capítulo */
+.summary-section h2 {
+    margin-bottom: 1rem;
+    color: #1f2937; /* Color del título */
+}
+
+.summary-section p {
+    font-size: 1rem;
+}
