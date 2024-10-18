@@ -38,7 +38,41 @@ app.get("/t", (req, res) => {
 app.get("/", function (req, res) {
   res.sendFile(path.join(__dirname, "/index.html"));
 });
+app.post("/register", (req, res) => {
+  const { email, password, confirmPassword } = req.body;
 
+  // Verificar si las contraseñas coinciden
+  if (password !== confirmPassword) {
+    return res.status(400).json({ message: "Las contraseñas no coinciden." });
+  }
+
+  // Consulta para verificar si el email ya está registrado
+  const checkUserQuery = `SELECT * FROM usuarios WHERE email = ?`;
+
+  connection.execute(checkUserQuery, [email], (err, results) => {
+    if (err) {
+      console.error("Error en la consulta: ", err);
+      return res.status(500).json({ message: "Error en la consulta." });
+    }
+
+    // Si el usuario ya existe
+    if (results.length > 0) {
+      return res.status(409).json({ message: "El correo ya está registrado." });
+    }
+
+    // Consulta para insertar el nuevo usuario
+    const insertUserQuery = `INSERT INTO usuarios (email, password) VALUES (?, ?)`;
+
+    connection.execute(insertUserQuery, [email, password], (err, result) => {
+      if (err) {
+        console.error("Error al registrar el usuario: ", err);
+        return res.status(500).json({ message: "Error al registrar el usuario." });
+      }
+
+      return res.json({ message: "Registro exitoso.", email });
+    });
+  });
+});
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
 
@@ -56,6 +90,16 @@ app.post("/login", (req, res) => {
     }
 
     return res.json({ message: "Inicio de sesión exitoso.", email });
+  });
+});
+app.post("/logout", (req, res) => {
+  // Destruir la sesión del usuario o limpiar las cookies si las usas
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: "Error al cerrar sesión" });
+    }
+    res.clearCookie("connect.sid"); // O el nombre de la cookie de sesión si usas sesiones
+    return res.json({ message: "sesión cerrada correctamente" });
   });
 });
 

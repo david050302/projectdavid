@@ -6,10 +6,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("login-form");
   const registerForm = document.getElementById("register-form");
   const toggleAuthButton = document.getElementById("toggle-auth");
-
   let isLoggedIn = false;
 
-  if (openAuthModalButton) {
+  // Verificar que openAuthModalButton existe antes de agregar el listener
+  if (openAuthModalButton && userInfoContainer) {
     openAuthModalButton.addEventListener("click", () => {
       if (!isLoggedIn) {
         authModal.style.display = "block";
@@ -20,8 +20,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Cerrar modal de autenticación
   const closeAuthButton = document.querySelector(".close-auth");
-  if (closeAuthButton) {
+  if (closeAuthButton && authModal) {
     closeAuthButton.addEventListener("click", () => {
       authModal.style.display = "none";
     });
@@ -32,7 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
       authModal.style.display = "none";
     }
   };
-  if (toggleAuthButton) {
+
+  // Alternar entre iniciar sesión y registro
+  if (toggleAuthButton && loginForm && registerForm) {
     toggleAuthButton.addEventListener("click", () => {
       if (loginForm.style.display === "none") {
         loginForm.style.display = "flex";
@@ -47,50 +50,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Inicio de sesión
-  document.getElementById("login-button").addEventListener("click", () => {
-    const email = document.getElementById("login-email").value;
-    const password = document.getElementById("login-password").value;
+  const loginButton = document.getElementById("login-button");
+  if (loginButton && openAuthModalButton && userInfoContainer && userNameSpan) {
+    loginButton.addEventListener("click", () => {
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
 
-    fetch("/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          return response.json().then((err) => {
-            throw new Error(err.message);
-          });
-        }
-      })
-      .then((data) => {
-        authModal.style.display = "none";
-        openAuthModalButton.textContent = data.email;
-        userInfoContainer.style.display = "block";
-        userNameSpan.textContent = data.email;
-        isLoggedIn = true;
-      })
-      .catch((error) => alert(error.message));
-  });
-
-  // Registro (Implementación opcional)
-  const registerButton = document.getElementById("register-button");
-  if (registerButton) {
-    registerButton.addEventListener("click", () => {
-      const email = document.getElementById("register-email").value;
-      const password = document.getElementById("register-password").value;
-      const confirmPassword = document.getElementById("confirm-password").value;
-
-      if (password !== confirmPassword) {
-        alert("Las contraseñas no coinciden.");
-        return;
-      }
-
-      fetch("http://127.0.0.1:5501/register", {
+      fetch("/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -99,23 +65,76 @@ document.addEventListener("DOMContentLoaded", () => {
       })
         .then((response) => {
           if (response.ok) {
-            return response.text();
+            return response.json();
           } else {
             return response.json().then((err) => {
               throw new Error(err.message);
             });
           }
         })
-        .then((data) => alert(data))
-        .catch((error) => console.error("Error:", error));
+        .then((data) => {
+          authModal.style.display = "none";
+          openAuthModalButton.textContent = data.email;
+          userInfoContainer.style.display = "block";
+          userNameSpan.textContent = data.email;
+          isLoggedIn = true;
+        })
+        .catch((error) => alert(error.message));
     });
   }
 
+  // Registro (Implementación opcional)
+  const registerButton = document.getElementById("register-button");
+if (registerButton) {
+  registerButton.addEventListener("click", () => {
+    const email = document.getElementById("register-email").value.trim();
+    const password = document.getElementById("register-password").value.trim();
+    const confirmPassword = document.getElementById("confirm-password").value.trim();
+
+    // Validar que los campos no estén vacíos
+    if (!email || !password || !confirmPassword) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+
+    // Validar que las contraseñas coincidan
+    if (password !== confirmPassword) {
+      alert("Las contraseñas no coinciden.");
+      return;
+    }
+
+    // Realizar la petición al servidor
+    fetch("/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password, confirmPassword }), // Incluye confirmPassword si es necesario
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json(); // Cambia a JSON porque tu respuesta es en este formato
+        } else {
+          return response.json().then((err) => {
+            throw new Error(err.message); // Lanza el error con el mensaje del servidor
+          });
+        }
+      })
+      .then((data) => {
+        alert(data.message); // Muestra el mensaje de la respuesta
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("Error en el registro: " + error.message);
+      });
+  });
+}
+
   // Cerrar sesión
   const logoutButton = document.getElementById("logout-button");
-  if (logoutButton) {
+  if (logoutButton && openAuthModalButton && userInfoContainer) {
     logoutButton.addEventListener("click", () => {
-      fetch("http://127.0.0.1:5501/logout", {
+      fetch("/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -124,14 +143,15 @@ document.addEventListener("DOMContentLoaded", () => {
       })
         .then((response) => {
           if (response.ok) {
-            return response.text();
+            return response.json();  // Siempre esperamos JSON como respuesta
           } else {
             return response.json().then((err) => {
               throw new Error(err.message);
             });
           }
         })
-        .then((message) => {
+        .then((data) => {
+          console.log(data.message);  // Puedes ver el mensaje en la consola
           userInfoContainer.style.display = "none";
           openAuthModalButton.textContent = "👤";
           isLoggedIn = false;
@@ -143,6 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Búsqueda de libros
   function searchBooks() {
     const searchInput = document.getElementById("search").value.toLowerCase();
     const books = document.querySelectorAll(".book");
@@ -157,6 +178,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  const searchButton = document.getElementById("search-button");
+  if (searchButton) {
+    searchButton.addEventListener("click", searchBooks);
+  }
+
+  // Cargar contenido del libro
   window.loadContent = function (bookId) {
     if (bookId) {
       fetch("/pages/" + bookId + ".html")
@@ -176,9 +203,4 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
   };
-
-  const searchButton = document.getElementById("search-button");
-  if (searchButton) {
-    searchButton.addEventListener("click", searchBooks);
-  }
 });
