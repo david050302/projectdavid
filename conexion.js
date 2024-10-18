@@ -57,7 +57,7 @@ app.post("/register", (req, res) => {
 
     // Si el usuario ya existe
     if (results.length > 0) {
-      return res.status(409).json({ message: "El correo ya está registrado." });
+      return res.status(209).json({ message: "El correo ya está registrado." });
     }
 
     // Consulta para insertar el nuevo usuario
