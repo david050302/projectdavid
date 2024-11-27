@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const authModal = document.getElementById("auth-modal");
   const userInfoContainer = document.getElementById("user-info");
   const userNameSpan = document.getElementById("user-name");
@@ -6,9 +6,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("login-form");
   const registerForm = document.getElementById("register-form");
   const toggleAuthButton = document.getElementById("toggle-auth");
+  const bookModal = document.getElementById("book-modal");
+  const bookSummary = document.getElementById("book-summary");
+  const closeModalButton = document.querySelector(".close");
+  const commentsList = document.getElementById("commentsList");
+  const commentForm = document.getElementById("commentForm");
   let isLoggedIn = false;
 
-  // Verificar que openAuthModalButton existe antes de agregar el listener
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  console.log("cargo la pagina");
+
+  // Verificar si el usuario está autenticado al cargar la página
+
+  // Abrir modal de autenticación o mostrar menú de usuario
   if (openAuthModalButton && userInfoContainer) {
     openAuthModalButton.addEventListener("click", () => {
       if (!isLoggedIn) {
@@ -31,6 +42,9 @@ document.addEventListener("DOMContentLoaded", () => {
   window.onclick = (event) => {
     if (authModal && event.target === authModal) {
       authModal.style.display = "none";
+    }
+    if (bookModal && event.target === bookModal) {
+      bookModal.style.display = "none";
     }
   };
 
@@ -73,6 +87,10 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         })
         .then((data) => {
+          console.log(data);
+          //localstorage
+          localStorage.setItem("user", JSON.stringify(data));
+          //localStorage.setItem("user_id", data.id_user);
           authModal.style.display = "none";
           openAuthModalButton.textContent = data.email;
           userInfoContainer.style.display = "block";
@@ -83,67 +101,38 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Registro (Implementación opcional)
+  // Registro de usuario
   const registerButton = document.getElementById("register-button");
-if (registerButton) {
-  registerButton.addEventListener("click", () => {
-    const email = document.getElementById("register-email").value.trim();
-    const password = document.getElementById("register-password").value.trim();
-    const confirmPassword = document.getElementById("confirm-password").value.trim();
+  if (registerButton) {
+    registerButton.addEventListener("click", () => {
+      const email = document.getElementById("register-email").value.trim();
+      const password = document
+        .getElementById("register-password")
+        .value.trim();
+      const confirmPassword = document
+        .getElementById("confirm-password")
+        .value.trim();
 
-    // Validar que los campos no estén vacíos
-    if (!email || !password || !confirmPassword) {
-      alert("Por favor, completa todos los campos.");
-      return;
-    }
+      if (!email || !password || !confirmPassword) {
+        alert("Por favor, completa todos los campos.");
+        return;
+      }
 
-    // Validar que las contraseñas coincidan
-    if (password !== confirmPassword) {
-      alert("Las contraseñas no coinciden.");
-      return;
-    }
+      if (password !== confirmPassword) {
+        alert("Las contraseñas no coinciden.");
+        return;
+      }
 
-    // Realizar la petición al servidor
-    fetch("/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password, confirmPassword }), // Incluye confirmPassword si es necesario
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json(); // Cambia a JSON porque tu respuesta es en este formato
-        } else {
-          return response.json().then((err) => {
-            throw new Error(err.message); // Lanza el error con el mensaje del servidor
-          });
-        }
-      })
-      .then((data) => {
-        alert(data.message); // Muestra el mensaje de la respuesta
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        alert("Error en el registro: " + error.message);
-      });
-  });
-}
-
-  // Cerrar sesión
-  const logoutButton = document.getElementById("logout-button");
-  if (logoutButton && openAuthModalButton && userInfoContainer) {
-    logoutButton.addEventListener("click", () => {
-      fetch("/logout", {
+      fetch("/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include",
+        body: JSON.stringify({ email, password, confirmPassword }),
       })
         .then((response) => {
           if (response.ok) {
-            return response.json();  // Siempre esperamos JSON como respuesta
+            return response.json();
           } else {
             return response.json().then((err) => {
               throw new Error(err.message);
@@ -151,36 +140,22 @@ if (registerButton) {
           }
         })
         .then((data) => {
-          console.log(data.message);  // Puedes ver el mensaje en la consola
-          userInfoContainer.style.display = "none";
-          openAuthModalButton.textContent = "👤";
-          isLoggedIn = false;
+          alert(data.message);
         })
         .catch((error) => {
-          console.error("Error al cerrar sesión:", error);
-          alert("Error al cerrar sesión");
+          console.error("Error:", error);
+          alert("Error en el registro: " + error.message);
         });
     });
   }
 
-  // Búsqueda de libros
-  function searchBooks() {
-    const searchInput = document.getElementById("search").value.toLowerCase();
-    const books = document.querySelectorAll(".book");
-
-    books.forEach((book) => {
-      const title = book.getAttribute("data-title").toLowerCase();
-      if (title.includes(searchInput)) {
-        book.style.display = "";
-      } else {
-        book.style.display = "none";
-      }
+  // Cerrar sesión
+  const logoutButton = document.getElementById("logout-button");
+  if (logoutButton) {
+    logoutButton.addEventListener("click", () => {
+      localStorage.clear();
+      location.reload();
     });
-  }
-
-  const searchButton = document.getElementById("search-button");
-  if (searchButton) {
-    searchButton.addEventListener("click", searchBooks);
   }
 
   // Cargar contenido del libro
@@ -194,8 +169,35 @@ if (registerButton) {
           return response.text();
         })
         .then((data) => {
-          document.getElementById("book-summary").innerHTML = data;
-          document.getElementById("book-modal").style.display = "block";
+          bookSummary.innerHTML = data;
+          bookModal.style.display = "block";
+
+          const user = JSON.parse(localStorage.getItem("user"));
+          // Cargar comentarios del libro
+          fetch(`/comments/${bookId}`)
+            .then((response) => response.json())
+            .then((data) => {
+              commentsList.innerHTML = "";
+              data.comments.forEach((comment) => {
+                const userEmail =
+                  comment.user_id == user.id_user
+                    ? user.email
+                    : "Usuario desconocido";
+                const commentText = comment.comment || "Comentario vacío";
+                const commentItem = document.createElement("div");
+                commentItem.classList.add("comment-item");
+                commentItem.textContent = `${userEmail}: ${commentText}`;
+                console.log(`Añadiendo comentario: ${commentItem.textContent}`);
+                commentsList.appendChild(commentItem);
+              });
+
+              document.getElementById("book-id").value = bookId;
+              //console.log("Comentarios procesados:", comments);
+            })
+            .catch((error) => {
+              console.error("Error al cargar comentarios:", error);
+              alert("No se pudieron cargar los comentarios.");
+            });
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -203,4 +205,78 @@ if (registerButton) {
         });
     }
   };
+
+  // Cerrar modal de libro
+  if (closeModalButton) {
+    closeModalButton.addEventListener("click", () => {
+      bookModal.style.display = "none";
+    });
+  }
+
+  // Enviar un nuevo comentario
+  if (commentForm) {
+    commentForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const commentInput = document.getElementById("commentInput");
+      const commentText = commentInput.value.trim();
+      const bookId = document.getElementById("book-id").value;
+
+      if (!isLoggedIn) {
+        alert("Debes iniciar sesión para comentar.");
+        return;
+      }
+
+      const user = JSON.parse(localStorage.getItem("user"));
+
+      if (commentText) {
+        fetch("/add-comment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            book_id: bookId,
+            comment: commentText,
+            user_id: user.id_user,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const commentItem = document.createElement("div");
+            commentItem.classList.add("comment-item");
+            commentItem.textContent = `${user.email}: ${data.comment}`;
+            commentsList.appendChild(commentItem);
+            commentInput.value = "";
+          })
+          .catch((error) => {
+            console.error("Error al enviar el comentario:", error);
+            alert("No se pudo enviar el comentario.");
+          });
+      }
+    });
+  }
+
+  if (user) {
+    fetch("/check-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        //localstorage
+        localStorage.setItem("user", JSON.stringify(data));
+        //localStorage.setItem("user_id", data.id_user);
+        authModal.style.display = "none";
+        openAuthModalButton.textContent = data.email;
+        userInfoContainer.style.display = "block";
+        userNameSpan.textContent = data.email;
+        isLoggedIn = true;
+      })
+      .catch((err) => console.error("Error al verificar sesión:", err));
+  }
 });

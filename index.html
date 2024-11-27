@@ -35,19 +35,19 @@
                 <div class="book" data-title="Moby Dick">
                     <img src="/imagenes/Moby_Dick.jpg" alt="Moby Dick">
                     <h2>Moby Dick</h2>
-                    <button onclick="loadContent('Moby_Dick')">Ver Resumen</button>
+                    <button onclick="loadContent('1')">Ver Resumen</button>
                 </div>
 
                 <div class="book" data-title="You">
                     <img src="/imagenes/you.jpg" alt="You">
                     <h2>You</h2>
-                    <button onclick="loadContent('you')">Ver Resumen</button>
+                    <button onclick="loadContent('2')">Ver Resumen</button>
                 </div>
                 
                 <div class="book" data-title="Dark">
                     <img src="/imagenes/dark.jpg" alt="Dark">
                     <h2>Dark</h2>
-                    <button onclick="loadContent('dark')">Ver Resumen</button>
+                    <button onclick="loadContent('3')">Ver Resumen</button>
                 </div>
 
                 <div class="book" data-title="Harry Potter">
@@ -173,11 +173,33 @@
     <div id="book-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
+            
+            <!-- Resumen del libro -->
             <div id="book-summary">
-                <!-- El contenido del libro se cargará aquí -->
+                <p>Este es un resumen del libro que se cargará dinámicamente.</p>
+            </div>
+            
+            <!-- Sección de comentarios -->
+            <div class="comments-section">
+                <h2>Comentarios</h2>
+                
+                <!-- Formulario para enviar comentarios -->
+                <form class="comment-form" id="commentForm">
+                    <textarea id="commentInput" rows="3" placeholder="Escribe tu comentario aquí..." required></textarea>
+                    <button type="submit">Publicar</button>
+                </form>
+                
+                <!-- Listado de comentarios -->
+                <div class="comments-list" id="commentsList">
+                    <!-- Los comentarios aparecerán aquí -->
+                </div>
             </div>
         </div>
     </div>
+    
+    <!-- Campo oculto para el ID del libro (que será dinámico) -->
+    <input type="hidden" id="book-id" value="0"> <!-- Esto debe actualizarse dinámicamente -->
+    
     <div id="auth-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -200,4 +222,7 @@
         </div>
     </div>
 </body>
+<script>
+
+</script>
 </html>

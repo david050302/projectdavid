@@ -61,18 +61,21 @@ app.post("/register", (req, res) => {
     }
 
     // Consulta para insertar el nuevo usuario
-    const insertUserQuery = `INSERT INTO usuarios (email, password) VALUES (?, ?)`;
+    const insertUserQuery = `NSERT INTO usuarios (email, password) VALUES (?, ?)`;
 
     connection.execute(insertUserQuery, [email, password], (err, result) => {
       if (err) {
         console.error("Error al registrar el usuario: ", err);
-        return res.status(500).json({ message: "Error al registrar el usuario." });
+        return res
+          .status(500)
+          .json({ message: "Error al registrar el usuario." });
       }
 
       return res.json({ message: "Registro exitoso.", email });
     });
   });
 });
+
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
 
@@ -89,9 +92,37 @@ app.post("/login", (req, res) => {
       return res.status(401).json({ message: "Credenciales inválidas." });
     }
 
-    return res.json({ message: "Inicio de sesión exitoso.", email });
+    return res.json({
+      message: "Inicio de sesión exitoso.",
+      email,
+      id_user: results[0]["id"],
+    });
   });
 });
+
+app.post("/check-session", (req, res) => {
+  const { email, id_user } = req.body;
+
+  const query = `SELECT * FROM usuarios WHERE email = ? AND id = ?`;
+
+  connection.execute(query, [email, id_user], (err, results) => {
+    if (err) {
+      console.error("Error en la consulta: ", err);
+      return res.status(500).json({ message: "Error en la consulta." });
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({ message: "Credenciales inválidas." });
+    }
+
+    return res.json({
+      message: "Inicio de sesión exitoso.",
+      email,
+      id_user: results[0]["id"],
+    });
+  });
+});
+
 app.post("/logout", (req, res) => {
   // Destruir la sesión del usuario o limpiar las cookies si las usas
   req.session.destroy((err) => {
@@ -100,6 +131,43 @@ app.post("/logout", (req, res) => {
     }
     res.clearCookie("connect.sid"); // O el nombre de la cookie de sesión si usas sesiones
     return res.json({ message: "sesión cerrada correctamente" });
+  });
+});
+
+app.post("/add-comment", (req, res) => {
+  const { book_id, user_id, comment } = req.body;
+
+  const query = `INSERT INTO comments (book_id, user_id, comment) VALUES (?, ?, ?)`;
+
+  connection.execute(query, [book_id, user_id, comment], (err, result) => {
+    if (err) {
+      console.error("Error al agregar el comentario:", err);
+      return res
+        .status(500)
+        .json({ message: "Error al agregar el comentario." });
+    }
+    return res
+      .status(200)
+      .json({ message: "Comentario agregado exitosamente.", comment: comment });
+  });
+});
+
+app.get("/comments/:book_id", (req, res) => {
+  const { book_id } = req.params; // Obtener el ID del libro desde los parámetros de la URL
+  // Consulta SQL para obtener los comentarios del libro
+  //TODO: agregar inner join
+  const getCommentsQuery = `SELECT * FROM comments WHERE book_id = ? ORDER BY created_at DESC`;
+
+  connection.execute(getCommentsQuery, [book_id], (err, results) => {
+    if (err) {
+      console.error("Error al obtener los comentarios:", err);
+      return res
+        .status(500)
+        .json({ message: "Error al obtener los comentarios." });
+    }
+
+    // Si no hay comentarios, devolvemos un array vacío
+    return res.status(200).json({ comments: results });
   });
 });
 
