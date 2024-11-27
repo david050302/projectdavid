@@ -141,6 +141,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         })
         .then((data) => {
           alert(data.message);
+          //TODO: ocultar modal
+          //TODO: redirigir al modal de inici de sesion
+          //TODO: loguearte de frente
         })
         .catch((error) => {
           console.error("Error:", error);

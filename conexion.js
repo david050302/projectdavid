@@ -61,7 +61,7 @@ app.post("/register", (req, res) => {
     }
 
     // Consulta para insertar el nuevo usuario
-    const insertUserQuery = `NSERT INTO usuarios (email, password) VALUES (?, ?)`;
+    const insertUserQuery = `INSERT INTO usuarios (email, password) VALUES (?, ?)`;
 
     connection.execute(insertUserQuery, [email, password], (err, result) => {
       if (err) {
